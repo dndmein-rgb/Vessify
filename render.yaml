@@ -3,7 +3,7 @@ services:
     name: vessify
     runtime: node
     plan: free
-    buildCommand: npm run build && npm run migrate:deploy
+    buildCommand: npm install --production=false && npm run build && npm run migrate:deploy
     startCommand: npm run start
     envVars:
       - key: DATABASE_URL

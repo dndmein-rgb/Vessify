@@ -1,11 +1,11 @@
 {
-  "name": "vessify-monorepo",
+  "name": "vessify",
   "version": "1.0.0",
   "private": true,
   "scripts": {
     "postinstall": "npm run install:backend && npm run install:frontend",
-    "install:backend": "cd backend && npm install",
-    "install:frontend": "cd frontend && npm install",
+    "install:backend": "cd backend && npm install --production=false",
+    "install:frontend": "cd frontend && npm install --production=false",
     "build:backend": "cd backend && npm run build",
     "build:frontend": "cd frontend && npm run build",
     "build": "npm run build:backend && npm run build:frontend",
