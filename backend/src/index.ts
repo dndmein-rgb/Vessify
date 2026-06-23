@@ -1,5 +1,9 @@
 import dns from "dns";
-dns.setServers(['1.1.1.1', '8.8.8.8']);
+
+if (process.env.NODE_ENV !== "production") {
+  dns.setServers(["1.1.1.1", "8.8.8.8"]);
+}
+
 import { serve } from "@hono/node-server";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
@@ -34,8 +38,26 @@ app.onError((err, c) => {
   return c.json({ error: "Internal server error" }, 500);
 });
 
-if (env.NODE_ENV !== "test") {
-  serve({ fetch: app.fetch, port: env.PORT }, (info) => {
+function startServer() {
+  const server = serve({ fetch: app.fetch, port: env.PORT }, (info) => {
     console.log(`🚀 Vessify backend running at http://localhost:${info.port}`);
   });
+
+  // On a Render restart, the previous instance's process may not have
+  // fully released the port yet (TIME_WAIT), causing a transient
+  // EADDRINUSE on the very first bind attempt. Retry once after a short
+  // delay instead of crashing the whole process immediately.
+  server.on("error", (err: NodeJS.ErrnoException) => {
+    if (err.code === "EADDRINUSE") {
+      console.warn(`Port ${env.PORT} still in use, retrying in 1s...`);
+      setTimeout(startServer, 1000);
+    } else {
+      console.error("Server failed to start:", err);
+      process.exit(1);
+    }
+  });
+}
+
+if (env.NODE_ENV !== "test") {
+  startServer();
 }

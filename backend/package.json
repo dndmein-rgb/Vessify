@@ -6,7 +6,6 @@
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "build": "prisma generate && tsc",
-    "build:vercel": "tsc --outDir vercel && cp -r src/lib vercel/ && cp -r src/routes vercel/ && cp -r src/parser vercel/",
     "start": "node dist/index.js",
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --runInBand",
     "db:generate": "prisma generate",
