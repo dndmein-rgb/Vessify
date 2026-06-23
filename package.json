@@ -8,7 +8,7 @@
     "install:frontend": "cd frontend && npm install --include=dev",
     "build:backend": "cd backend && npm run build",
     "build:frontend": "cd frontend && npm run build",
-    "build": "npm run build:backend && npm run build:frontend",
+     "build": "npm install --prefix backend && npm install --prefix frontend --include=dev && npm run build --prefix frontend", 
     "migrate:deploy": "cd backend && npx prisma migrate deploy",
     "start:backend": "cd backend && npm run start",
     "start:frontend": "cd frontend && npm run start",
