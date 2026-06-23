@@ -12,7 +12,7 @@
   "migrate:deploy": "cd backend && npx prisma migrate deploy",
   "start:backend": "cd backend && npm run start",
   "start:frontend": "cd frontend && npm run start",
-  "start": "npm run start --prefix backend"
+  "start": "npx concurrently -k -s first \"npx cross-env PORT=8787 npm run start:backend\" \"npx cross-env PORT=$PORT npm run start:frontend\""
 },
 "devDependencies": {
   "concurrently": "^8.2.2",
