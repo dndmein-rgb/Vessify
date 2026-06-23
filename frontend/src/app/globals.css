@@ -1,0 +1,42 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-sans: "Inter", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+}
+
+* {
+  border-color: theme("colors.border");
+}
+
+body {
+  background-color: theme("colors.background");
+  color: theme("colors.text.primary");
+  font-feature-settings: "cv11", "ss01";
+}
+
+::selection {
+  background-color: theme("colors.accent.muted");
+  color: theme("colors.text.primary");
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: theme("colors.border");
+  border-radius: 6px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: theme("colors.accent.muted");
+}
+
+:focus-visible {
+  outline: 2px solid theme("colors.accent.light");
+  outline-offset: 2px;
+}

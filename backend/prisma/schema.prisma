@@ -1,0 +1,119 @@
+// Prisma schema for Vessify assignment.
+//
+// Tenancy model: each user IS their own organization (organizationId = user.id).
+// This satisfies the assignment's isolation requirement ("scoped to the user's
+// organization/team ID") without pulling in Better Auth's full organization
+// plugin, which would add invite flows / multi-member teams that nothing in
+// this assignment's flows actually exercises. See README for the full
+// rationale. Swapping in the real org plugin later only means adding an
+// `Organization` model and changing where `organizationId` is sourced from —
+// the rest of the isolation logic (every query filtered by organizationId)
+// does not change.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ---------- Better Auth core tables ----------
+// Shapes follow Better Auth's required schema. Field names/types must match
+// what Better Auth's Prisma adapter expects. 
+
+model User {
+  id            String    @id
+  name          String
+  email         String    @unique
+  emailVerified Boolean   @default(false)
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  sessions     Session[]
+  accounts     Account[]
+  transactions Transaction[]
+
+  @@map("user")
+}
+
+model Session {
+  id        String   @id
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  userId                String
+  accountId             String
+  providerId            String
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("account")
+}
+
+// ---------- Application data ----------
+
+model Transaction {
+  id             String   @id @default(uuid())
+  userId         String
+  organizationId String // == userId in this simplified tenancy model; kept as its own column so the isolation pattern matches a real multi-tenant org setup
+  description    String
+  amount         Float
+  date           DateTime
+  balanceAfter   Float?
+  category       String?
+  confidence     Float
+  rawText        String
+  createdAt      DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId, createdAt])
+  @@index([userId])
+  @@map("transaction")
+}
+
+model Jwks {
+  id         String    @id
+  publicKey  String
+  privateKey String
+  createdAt  DateTime  @default(now())
+  expiresAt  DateTime?
+
+  @@map("jwks")
+}
+
+model Verification {
+  id         String    @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime? @default(now())
+  updatedAt  DateTime? @updatedAt
+
+  @@map("verification")
+}
