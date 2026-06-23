@@ -41,5 +41,6 @@ coverage/
 .DS_Store
 Thumbs.db
 
-frontend/src/*/Antigravity IDE.exe
-frontend/src/*/Antigravity-x64.exe
+frontend/src/Antigravity IDE.exe
+frontend/src/Antigravity-x64.exe
+*.exe
